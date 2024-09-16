@@ -58,8 +58,10 @@ jobs:
       - name: Get Runner Public IP Address
         id: get_runner_ip
         run: |
-          echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
-          echo "Runner's public IP address is: ${{ steps.get_runner_ip.outputs.ip }}"
+          echo "Fetching runner's public IP address..."
+          curl -s https://api.ipify.org > runner_ip.txt
+          echo "Runner's public IP address is: $(cat runner_ip.txt)"
+        
 
 
   deploy:
