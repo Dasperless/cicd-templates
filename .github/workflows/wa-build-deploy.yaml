@@ -20,9 +20,9 @@ on:
         default: '3.12'
         description: 'Python version to use'
     secrets:
-      publish_profile:
+      azure_credentials:
         required: true
-        description: 'Azure publish profile secret'
+        description: 'Azure credentials secret'
 
 jobs:
   build:
@@ -80,10 +80,14 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.azure_credentials }}
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
           app-name: ${{ inputs.app_name }}
           slot-name: ${{ inputs.slot_name }}
-          publish-profile: ${{ secrets.publish_profile }}
