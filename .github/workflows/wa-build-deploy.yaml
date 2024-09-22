@@ -19,10 +19,6 @@ on:
         type: string
         default: '3.12'
         description: 'Python version to use'
-    secrets:
-      azure_credentials:
-        required: true
-        description: 'Azure credentials secret'
 
 jobs:
   build:
@@ -61,8 +57,6 @@ jobs:
           echo "Fetching runner's public IP address..."
           curl -s https://api.ipify.org > runner_ip.txt
           echo "Runner's public IP address is: $(cat runner_ip.txt)"
-        
-
 
   deploy:
     runs-on: ubuntu-latest
