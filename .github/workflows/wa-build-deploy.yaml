@@ -79,7 +79,7 @@ jobs:
         run: unzip release.zip
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v1.4.3
         with:
           client-id: "e8fef53b-6f2b-4f75-a7c9-126571ca5d68"
           tenant-id: "509b778a-521f-4cde-a959-2810893c5616"
