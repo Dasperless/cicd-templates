@@ -61,9 +61,9 @@ jobs:
       - name: Get Secrets
         id: get_secrets
         run: |
-          echo ${{ secrets.AZURE_CLIENT_ID }}
-          echo ${{ secrets.AZURE_TENANT_ID }}
-          echo ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          echo ${{ secrets.azure_client_id }}
+          echo ${{ secrets.azure_tenant_id }}
+          echo ${{ secrets.azure_subscription_id }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -84,9 +84,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          client-id: ${{ secrets.azure_client_id }}
+          tenant-id: ${{ secrets.azure_tenant_id }}
+          subscription-id: ${{ secrets.azure_subscription_id }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
