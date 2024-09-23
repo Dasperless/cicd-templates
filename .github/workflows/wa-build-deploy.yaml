@@ -84,7 +84,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.azure_login_Creds }}
+          creds: ${{ secrets.azure_login_creds }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
