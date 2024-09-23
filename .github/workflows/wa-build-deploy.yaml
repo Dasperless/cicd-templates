@@ -57,6 +57,13 @@ jobs:
           echo "Fetching runner's public IP address..."
           curl -s https://api.ipify.org > runner_ip.txt
           echo "Runner's public IP address is: $(cat runner_ip.txt)"
+          
+      - name: Get Secrets
+        id: get_secrets
+        run: |
+          echo ${{ secrets.AZURE_CLIENT_ID }}
+          echo ${{ secrets.AZURE_TENANT_ID }}
+          echo ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
   deploy:
     runs-on: ubuntu-latest
