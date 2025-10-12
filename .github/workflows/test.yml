@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     env:
-        TEST_ENV_VAR: {{vars.MI_VARIABLE}}
+        TEST_ENV_VAR: '{{vars.MI_VARIABLE}}'
     steps:
 
       - name: Run Tests
