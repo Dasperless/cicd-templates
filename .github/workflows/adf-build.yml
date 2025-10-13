@@ -1,0 +1,214 @@
+name: Resource Build
+
+on:
+  workflow_call:
+    inputs:
+      subscription_id:
+        required: true
+        type: string
+        description: 'Azure Subscription ID'
+      resource_group:
+        required: true
+        type: string
+        description: 'Name of the Azure Resource Group'
+      data_factory_name:
+        required: true
+        type: string
+        description: 'Name of the Azure Data Factory'
+      source_environment:
+        required: true
+        type: string
+        description: 'Source Environment'
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+        description: 'Azure credentials for authentication'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment-1 }}
+    steps:
+      - name: Print Environment Variable
+        run: |
+            echo ${{inputs.subscription_id}}
+            echo ${{inputs.resource_group}}
+            echo ${{inputs.data_factory_name}}
+            echo ${{inputs.source_environment}}
+  # build:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         fetch-depth: 0
+
+  #     - name: Azure Login
+  #       uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #         enable-AzPSSession: true
+
+  #     # ============================================
+  #     # EXPORT PHASE - PowerShell
+  #     # ============================================
+  #     - name: Export Resource ARM Template
+  #       uses: azure/powershell@v1
+  #       with:
+  #         azPSVersion: "latest"
+  #         inlineScript: |
+  #           Write-Host "Exporting Logic App: ${{ github.event.inputs.logic_app_name }}"
+            
+  #           $resourceId = "/subscriptions/${{ vars.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ vars.SOURCE_RG }}/providers/Microsoft.Web/sites/${{ github.event.inputs.logic_app_name }}"
+            
+  #           # Export the resource as ARM template
+  #           Export-AzResourceGroup `
+  #             -ResourceGroupName "${{ vars.SOURCE_RG }}" `
+  #             -Resource $resourceId `
+  #             -Path "./exports" `
+  #             -IncludeParameterDefaultValue `
+  #             -Force
+            
+  #           # Rename to standard name
+  #           Move-Item -Path "./exports/template.json" -Destination "./exports/raw-template-${{ github.event.inputs.source_environment }}.json" -Force
+            
+  #           Write-Host "Export completed successfully"
+            
+  #           # Get app settings
+  #           $appSettings = Get-AzWebApp -ResourceGroupName "${{ vars.SOURCE_RG }}" -Name "${{ github.event.inputs.logic_app_name }}"
+  #           $appSettings.SiteConfig.AppSettings | ConvertTo-Json -Depth 10 | Out-File "./exports/app-settings-${{ github.event.inputs.source_environment }}.json"
+            
+  #           Write-Host "App settings exported"
+
+  #     # ============================================
+  #     # PARAMETERIZATION PHASE - Python
+  #     # ============================================
+  #     - name: Setup Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.11'
+
+  #     - name: Install Python Dependencies
+  #       run: |
+  #         pip install azure-mgmt-resource azure-identity pyyaml
+
+  #     # - name: Parameterize ARM Template
+  #     #   run: |
+  #     #     python scripts/parameterize-logicapp.py \
+  #     #       --input ./exports/raw-template-${{ github.event.inputs.source_environment }}.json \
+  #     #       --output ./exports/deployment-template-${{ github.event.inputs.target_environment }}.json \
+  #     #       --source-env ${{ github.event.inputs.source_environment }} \
+  #     #       --target-env ${{ github.event.inputs.target_environment }} \
+  #     #       --source-rg ${{ vars.SOURCE_RG }} \
+  #     #       --target-rg ${{ vars.TARGET_RG }} \
+  #     #       --env-config ./config/${{ github.event.inputs.target_environment }}.json \
+  #     #       --app-settings ./exports/app-settings-${{ github.event.inputs.source_environment }}.json
+
+  #     # - name: Generate Parameters File
+  #     #   run: |
+  #     #     python scripts/generate-parameters.py \
+  #     #       --env-config ./config/${{ github.event.inputs.target_environment }}.json \
+  #     #       --output ./parameters/parameters-${{ github.event.inputs.target_environment }}.json \
+  #     #       --logic-app-name ${{ github.event.inputs.logic_app_name }}
+
+  #     # # ============================================
+  #     # # VALIDATION & WHAT-IF PHASE
+  #     # # ============================================
+  #     # - name: Validate ARM Template
+  #     #   run: |
+  #     #     echo "## 🔍 Template Validation" >> $GITHUB_STEP_SUMMARY
+          
+  #     #     VALIDATION_OUTPUT=$(az deployment group validate \
+  #     #       --resource-group ${{ vars.TARGET_RG }} \
+  #     #       --template-file ./exports/deployment-template-${{ github.event.inputs.target_environment }}.json \
+  #     #       --parameters @./parameters/parameters-${{ github.event.inputs.target_environment }}.json \
+  #     #       --mode Incremental 2>&1)
+          
+  #     #     if [ $? -eq 0 ]; then
+  #     #       echo "✅ **Validation Status:** Passed" >> $GITHUB_STEP_SUMMARY
+  #     #       echo "Template is valid and ready for deployment" >> $GITHUB_STEP_SUMMARY
+  #     #     else
+  #     #       echo "❌ **Validation Status:** Failed" >> $GITHUB_STEP_SUMMARY
+  #     #       echo '```' >> $GITHUB_STEP_SUMMARY
+  #     #       echo "$VALIDATION_OUTPUT" >> $GITHUB_STEP_SUMMARY
+  #     #       echo '```' >> $GITHUB_STEP_SUMMARY
+  #     #       exit 1
+  #     #     fi
+
+  #     # - name: What-If Analysis
+  #     #   id: whatif
+  #     #   run: |
+  #     #     echo "## 📊 What-If Analysis - Deployment Preview" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "**Source Environment:** ${{ github.event.inputs.source_environment }}" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "**Target Environment:** ${{ github.event.inputs.target_environment }}" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "**Logic App:** ${{ github.event.inputs.logic_app_name }}" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "**Target Resource Group:** ${{ vars.TARGET_RG }}" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "" >> $GITHUB_STEP_SUMMARY
+          
+  #     #     # Run what-if and capture output
+  #     #     az deployment group what-if \
+  #     #       --resource-group ${{ vars.TARGET_RG }} \
+  #     #       --template-file ./exports/deployment-template-${{ github.event.inputs.target_environment }}.json \
+  #     #       --parameters @./parameters/parameters-${{ github.event.inputs.target_environment }}.json \
+  #     #       --mode Incremental \
+  #     #       --result-format FullResourcePayloads \
+  #     #       > ./exports/whatif-output-${{ github.event.inputs.target_environment }}.txt 2>&1
+          
+  #     #     # Parse and format what-if output for summary
+  #     #     echo "### 🔄 Changes to be Applied:" >> $GITHUB_STEP_SUMMARY
+  #     #     echo '```diff' >> $GITHUB_STEP_SUMMARY
+  #     #     cat ./exports/whatif-output-${{ github.event.inputs.target_environment }}.txt >> $GITHUB_STEP_SUMMARY
+  #     #     echo '```' >> $GITHUB_STEP_SUMMARY
+  #     #     echo "" >> $GITHUB_STEP_SUMMARY
+          
+  #     #     # Extract key changes
+  #     #     if grep -q "Resource changes: " ./exports/whatif-output-${{ github.event.inputs.target_environment }}.txt; then
+  #     #       echo "### 📈 Summary of Changes:" >> $GITHUB_STEP_SUMMARY
+  #     #       grep "Resource changes: " ./exports/whatif-output-${{ github.event.inputs.target_environment }}.txt >> $GITHUB_STEP_SUMMARY
+  #     #     fi
+          
+  #     #     echo "" >> $GITHUB_STEP_SUMMARY
+  #     #     echo "---" >> $GITHUB_STEP_SUMMARY
+
+  #     # # ============================================
+  #     # # COMMIT PHASE - Git Operations
+  #     # # ============================================
+  #     # - name: Commit Templates to Source Branch
+  #     #   if: github.event.inputs.commit_changes == 'true'
+  #     #   run: |
+  #     #     git config user.name "github-actions[bot]"
+  #     #     git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+  #     #     # Create branch for source environment if it doesn't exist
+  #     #     SOURCE_BRANCH="arm-templates/${{ github.event.inputs.source_environment }}"
+  #     #     git checkout -B $SOURCE_BRANCH
+          
+  #     #     # Create directory structure
+  #     #     mkdir -p arm-templates/${{ github.event.inputs.source_environment }}/logic-apps/${{ github.event.inputs.logic_app_name }}
+          
+  #     #     # Copy source files
+  #     #     cp ./exports/raw-template-${{ github.event.inputs.source_environment }}.json \
+  #     #        arm-templates/${{ github.event.inputs.source_environment }}/logic-apps/${{ github.event.inputs.logic_app_name }}/template.json
+          
+  #     #     cp ./exports/app-settings-${{ github.event.inputs.source_environment }}.json \
+  #     #        arm-templates/${{ github.event.inputs.source_environment }}/logic-apps/${{ github.event.inputs.logic_app_name }}/app-settings.json
+          
+  #     #     # Add metadata file
+  #     #     cat > arm-templates/${{ github.event.inputs.source_environment }}/logic-apps/${{ github.event.inputs.logic_app_name }}/metadata.json <<EOF
+  #     #     {
+  #     #       "exportedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  #     #       "exportedBy": "${{ github.actor }}",
+  #     #       "workflowRun": "${{ github.run_id }}",
+  #     #       "sourceEnvironment": "${{ github.event.inputs.source_environment }}",
+  #     #       "resourceGroup": "${{ vars.SOURCE_RG }}",
+  #     #       "logicAppName": "${{ github.event.inputs.logic_app_name }}"
+  #     #     }
+  #     #     EOF
+          
+  #     #     # Commit and push
+  #     #     git add arm-templates/${{ github.event.inputs.source_environment }}/
+  #     #     git commit -m "Export ARM template from ${{ github.event.inputs.source_environment }} - ${{ github.event.inputs.logic_app_name }} [skip ci]" || echo "No changes to commit"
+  #     #     git push origin $SOURCE_BRANCH --force
