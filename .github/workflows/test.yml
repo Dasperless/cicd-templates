@@ -1,20 +1,22 @@
 name: Test Workflow
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment for testing'
+        required: true
+        type: string
 
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: test
-    env:
-        TEST_ENV_VAR: '{{vars.MI_VARIABLE}}'
+    environment: ${{ inputs.environment }}
     steps:
-
       - name: Run Tests
         run: |
-            echo "Running tests..."
-            echo "The value of TEST_ENV_VAR is $TEST_ENV_VAR"
+            echo "Writting variables..."
+            echo "TEST_ENV_VAR=${{ vars.MI_VARIABLE}}" >> $GITHUB_ENV
 
   test-2:
       runs-on: ubuntu-latest
