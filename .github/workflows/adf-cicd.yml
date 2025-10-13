@@ -33,7 +33,7 @@ jobs:
     environment: ${{ github.event.inputs.source_environment }}
     steps:
       - name: "Set Workflow"
-        uses: cicd-templates/.github/workflows/adf-build.yaml@main
+        uses: Dasperless/cicd-templates/.github/workflows/adf-build.yml@main
         with:
           subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           resource_group: ${{ vars.SOURCE_RG }}
