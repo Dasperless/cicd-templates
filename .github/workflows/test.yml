@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Run Tests
         run: |
-            echo "Writting variables..."
+            echo "Writting variables ${{vars.MI_VARIABLE}}"
             echo "TEST_ENV_VAR=${{ vars.MI_VARIABLE}}" >> $GITHUB_ENV
 
   test-2:
@@ -23,4 +23,4 @@ jobs:
       environment: test
       steps:
       - name: Print Environment Variable
-        run: echo "The value of TEST_ENV_VAR is ${{ env.TEST_ENV_VAR }}"
+        run: echo "The value of TEST_ENV_VAR is $TEST_ENV_VAR"
