@@ -2,10 +2,14 @@ name: Test Workflow
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      environment-1:
         description: 'Environment for testing'
         required: true
         type: string
+      environment-2:
+        description: 'Environment 2 for testing'
+        required: true
+        type: string        
 
 
 jobs:
@@ -15,13 +19,12 @@ jobs:
     steps:
       - name: Run Tests
         run: |
-            echo "Writting variables ${{vars.MI_VARIABLE}}"
-            echo "TEST_ENV_VAR=${{ vars.MI_VARIABLE}}" >> $GITHUB_ENV
+            echo The value of the variable is ${{ vars.MI_VARIABLE }}
 
   test-2:
       runs-on: ubuntu-latest
-      environment: test
+      environment: ${{ inputs.environment-2 }}
       steps:
       - name: Print Environment Variable
         run: |
-          echo The value of TEST_ENV_VAR is $TEST_ENV_VAR
+          echo The value of the variable is ${{ vars.MI_VARIABLE }}
