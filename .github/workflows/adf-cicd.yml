@@ -29,15 +29,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Set Workflow"
-        uses: Dasperless/cicd-templates/.github/workflows/adf-build.yml@main
-        with:
-          subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          resource_group: ${{ vars.SOURCE_RG }}
-          data_factory_name: ${{ vars.DATA_FACTORY_NAME }}
-          target_environment: ${{ github.event.inputs.target_environment }}
+    uses: Dasperless/cicd-templates/.github/workflows/adf-build.yml@main
+    with:
+      subscription_id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      resource_group: ${{ vars.SOURCE_RG }}
+      data_factory_name: ${{ vars.DATA_FACTORY_NAME }}
+      target_environment: ${{ github.event.inputs.target_environment }}
 
     
 
