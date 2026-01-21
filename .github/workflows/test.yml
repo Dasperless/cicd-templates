@@ -10,9 +10,23 @@ on:
 jobs:
   test-call:
       runs-on: ubuntu-latest
+      environment: ${{inputs.environment}}
       # environment: ${{ inputs.environment }}
       steps:
-      - name: Print Environment Variable
+      - name: 'Az CLI login'
+        uses: azure/login@v2
+        with:
+          client-id: ${{vars.CLIENT_ID}}
+          tenant-id: ${{vars.TENANT_ID}}
+          subscription-id: ${{vars.SUBSCRIPTION_ID}}
+      
+      - name: 'Get Secrets from Key Vault'
+        uses: azure/get-keyvault-secrets@v1
+        with:
+          keyvault: ${{vars.keyvault-name}}
+          secrets: 'TEST' 
+        id: kv
+      
+      - name: 'Uso del secreto'
         run: |
-          echo environment is ${{inputs.environment}}
-          echo The value of the variable is ${{ vars.MI_VARIABLE }}
+          echo "Usando el secreto centralizado: ${{ steps.kv.outputs.TEST }}"
