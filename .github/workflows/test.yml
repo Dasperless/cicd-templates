@@ -1,29 +1,11 @@
 name: Test Workflow
 on:
-  workflow_dispatch:
-    inputs:
-      environment-1:
-        description: 'Environment for testing'
-        required: true
-        type: string
-      environment-2:
-        description: 'Environment 2 for testing'
-        required: true
-        type: string        
-
+  workflow_call:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment-1 }}
-    steps:
-      - name: Run Tests
-        run: |
-            echo The value of the variable is ${{ vars.MI_VARIABLE }}
-
-  test-2:
+  test-call:
       runs-on: ubuntu-latest
-      environment: ${{ inputs.environment-2 }}
+      # environment: ${{ inputs.environment-2 }}
       steps:
       - name: Print Environment Variable
         run: |
