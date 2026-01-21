@@ -23,7 +23,7 @@ jobs:
       - name: 'Get Secrets from Key Vault'
         uses: azure/get-keyvault-secrets@v1
         with:
-          keyvault: ${{vars.keyvault-name}}
+          keyvault: ${{vars.KEYVAULT_NAME}}
           secrets: 'TEST' 
         id: kv
       
