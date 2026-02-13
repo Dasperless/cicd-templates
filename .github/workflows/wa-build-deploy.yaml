@@ -19,11 +19,12 @@ on:
         type: string
         default: '3.12'
         description: 'Python version to use'
+    secrets:
+      azure_credentials:
+        required: false
+        default: 'Production'
+        description: 'Azure credentials secret'
 
-permissions:
-  id-token: write  # Required for OIDC authentication
-  contents: read  
-      
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,7 +41,7 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -61,14 +62,14 @@ jobs:
           echo "Fetching runner's public IP address..."
           curl -s https://api.ipify.org > runner_ip.txt
           echo "Runner's public IP address is: $(cat runner_ip.txt)"
-          
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build  
+    needs: build
     environment:
       name: ${{ inputs.slot_name }}
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -79,11 +80,9 @@ jobs:
         run: unzip release.zip
 
       - name: Azure Login
-        uses: azure/login@v1.4.3
+        uses: azure/login@v1
         with:
-          client-id: "e8fef53b-6f2b-4f75-a7c9-126571ca5d68"
-          tenant-id: "509b778a-521f-4cde-a959-2810893c5616"
-          allow-no-subscriptions: true 
+          creds: ${{ secrets.azure_credentials }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
